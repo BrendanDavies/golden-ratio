@@ -23,6 +23,7 @@
   var animating = false;
   var scrollTimeout;
 
+  // TODO: Undo user agent stuff
   var userAgent = window.navigator.userAgent.toLowerCase(),
       firefox = userAgent.indexOf('firefox') != -1 || userAgent.indexOf('mozilla') == -1,
       ios = /iphone|ipod|ipad/.test( userAgent ),
@@ -34,11 +35,20 @@
 
 // EVENTS
 ///////
+  var standardizeTouch = event => ({
+    x: event.touches[0].clientX,
+    y: event.touches[0].clientY
+  });
+
   var resizes$ = Rx.Observable.fromEvent(window, 'resize');
   var scrolls$ = Rx.Observable.fromEvent(window, 'scroll');
   var wheels$ = Rx.Observable.fromEvent(window, 'wheel');
-  var touchStarts$ = Rx.Observable.fromEvent(window, 'touchstart');
-  var touchMoves$ = Rx.Observable.fromEvent(window, 'touchmove');
+  var touchStarts$ = Rx.Observable
+    .fromEvent(window, 'touchstart')
+    .map(standardizeTouch);
+  var touchMoves$ = Rx.Observable
+    .fromEvent(window, 'touchmove')
+    .map(standardizeTouch);
   var touchEnds$ = Rx.Observable.fromEvent(window, 'touchend');
   var keyDowns$ = Rx.Observable.fromEvent(window, 'keydown');
   
@@ -62,21 +72,17 @@
     scrollHandler();
   });
 
-  touchStarts$.subscribe(function(e) {
-    e.preventDefault()
-    var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+  touchStarts$.subscribe(function(position) {
     moved = 0;
-    touchStartX = touch.pageX;
-    touchStartY = touch.pageY;
+    touchStartX = position.x;
+    touchStartY = position.y;
     cancelAnimationFrame(animRAF);
   });
 
-  touchMoves$.subscribe(function(e) {
-    e.preventDefault()
-    var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
-    moved = ((touchStartY - touch.pageY)+(touchStartX - touch.pageX)) * 3;
-    touchStartX = touch.pageX;
-    touchStartY = touch.pageY;
+  touchMoves$.subscribe(function(position) {
+    moved = ((touchStartY - position.y)+(touchStartX - position.x)) * 3;
+    touchStartX = position.x;
+    touchStartY = position.y;
     rotation += moved/-10;
     rotation = trimRotation();
     startScrollTimeout();
