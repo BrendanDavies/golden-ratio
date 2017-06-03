@@ -1,5 +1,5 @@
 /* global window Rx */
-(function () {
+(function iife() {
   const aspect = 0.618033;
   const axis = 0.7237;
 
@@ -39,7 +39,7 @@
     window.requestAnimationFrame(() => {
       const scale = aspect ** (rotation / 90);
       currentSection = Math.min(sectionCount + 2, Math.max(-sectionCount, Math.floor((rotation - 30) / -90)));
-      spiral.style.transform = 'rotate(' + rotation + 'deg) scale(' + scale + ')';
+      spiral.style.transform = `rotate(${rotation}deg) scale(${scale})`;
       // TODO: Something better
       sections.forEach((section) => {
         section.classList.remove('active');
@@ -74,7 +74,10 @@
 
   function buildSpiral() {
     // rotate around this point
-    spiralOrigin = Math.floor(_winW * axis) + 'px ' + Math.floor(_winW * aspect * axis) + 'px';
+    const xPixels = Math.floor(_winW * axis);
+    const yPixels = Math.floor(_winW * aspect * axis);
+
+    spiralOrigin = `${xPixels}px ${yPixels}px`;
     let w = _winW * aspect;
     let h = w; // they're squares
     if (smallScreen && !landscape) { // flip it 90deg if it's a portrait phone
@@ -100,8 +103,8 @@
       section.style.height = h;
       section.style.transformOrigin = spiralOrigin;
       section.style.backfaceVisiblity = 'hidden';
-      section.style.backgroundColor = 'rgb(' + dimmedColor + ',50,50)';
-      section.style.transform = 'rotate(' + myRot + 'deg) scale(' + scale + ') ' + translate;
+      section.style.backgroundColor = `rgb(${dimmedColor},50,50)`;
+      section.style.transform = `rotate(${myRot}deg) scale(${scale}) ${translate}`;
     });
     scrollHandler();
   }
