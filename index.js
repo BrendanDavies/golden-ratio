@@ -108,7 +108,9 @@
       sections.forEach(function(section) {
         section.classList.remove['active']
       });
-      sections[currentSection].classList.add('active');
+      if (sections[currentSection]) {
+          sections[currentSection].classList.add('active');
+      }
     })
   }
   function animateScroll(targR,startR,speed) {
