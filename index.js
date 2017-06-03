@@ -2,7 +2,7 @@
 (function() {
 
   var WIN = window;
-  var sections = $('.js-section');
+  var sections = document.querySelectorAll('.js-section');
   var spiral = document.querySelector('.js-spiral');
 
   var _winW;
@@ -89,11 +89,13 @@
     scrollHandler()
   })
 
-  sections.on('click',function() {
-    cancelAnimationFrame(animRAF)
-    animateScroll($(this).index() * -90,rotation);
-  })
-
+  // TODO: USE DELEGATE LISTENER
+  sections.forEach(function(section) {
+    section.addEventListener('click',function() {
+        cancelAnimationFrame(animRAF)
+        animateScroll($(this).index() * -90,rotation);
+    });
+  });
 
 // FUNCTIONS
 ////////////
@@ -102,8 +104,11 @@
       var scale = Math.pow(aspect,rotation/90);
       currentSection = Math.min(sectionCount + 2,Math.max(-sectionCount,Math.floor((rotation-30)/-90)));
       spiral.style.transform = 'rotate(' + rotation + 'deg) scale(' + scale + ')';
-      sections.removeClass('active')
-      sections.eq(currentSection).addClass('active')
+      // TODO: Something better
+      sections.forEach(function(section) {
+        section.classList.remove['active']
+      });
+      sections[currentSection].classList.add('active');
     })
   }
   function animateScroll(targR,startR,speed) {
@@ -148,17 +153,15 @@
 
     spiral.style.transformOrigin= spiralOrigin;
     spiral.style.backfaceVisiblity= 'hidden';
-    sections.each(function(i){
-      var myRot = Math.floor(90*i);
-      var scale = Math.pow(aspect, i);
-      $(this).css({
-        width: w,
-        height: h,
-        transformOrigin: spiralOrigin,
-        backfaceVisiblity: 'hidden',
-        backgroundColor: 'rgb(' + Math.floor(255-i*(255/sectionCount)) + ',50,50)',
-        transform: 'rotate(' + myRot + 'deg) scale(' + Math.pow(aspect, i) + ') ' + translate
-      })
+    sections.forEach(function(section, index){
+      var myRot = Math.floor(90*index);
+      var scale = Math.pow(aspect, index);
+      section.style.width= w;
+      section.style.height= h;
+      section.style.transformOrigin= spiralOrigin;
+      section.style.backfaceVisiblity= 'hidden';
+      section.style.backgroundColor= 'rgb(' + Math.floor(255-index*(255/sectionCount)) + ',50,50)';
+      section.style.transform= 'rotate(' + myRot + 'deg) scale(' + Math.pow(aspect, index) + ') ' + translate;
     })
     scrollHandler();
   }
