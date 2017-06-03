@@ -1,9 +1,9 @@
 
-$(function() {
+(function() {
 
-  var WIN = $(window);
+  var WIN = window;
   var sections = $('.js-section');
-  var spiral = $('.js-spiral')
+  var spiral = document.querySelector('.js-spiral');
 
   var _winW;
   var _winH;
@@ -35,13 +35,13 @@ $(function() {
 // EVENTS
 /////////
 
-  WIN.on('resize',resizeHandler);
-  WIN.on('scroll',function(e){
+  WIN.addEventListener('resize',resizeHandler);
+  WIN.addEventListener('scroll',function(e){
     e.preventDefault();
   })
 
-  WIN.on('wheel', function(e) {
-    var deltaY = -e.originalEvent.deltaY;
+  WIN.addEventListener('wheel', function(e) {
+    var deltaY = -e.deltaY; // WAS originalEvent
     if (windows || linux) {
       deltaY = e.deltaY * 5;
     }
@@ -54,7 +54,7 @@ $(function() {
     scrollHandler();
   });
 
-  WIN.on('touchstart', function(e) {
+  WIN.addEventListener('touchstart', function(e) {
     e.preventDefault()
     var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
     moved = 0;
@@ -62,7 +62,7 @@ $(function() {
     touchStartY = touch.pageY;
     cancelAnimationFrame(animRAF);
   })
-  WIN.on('touchmove', function(e) {
+  WIN.addEventListener('touchmove', function(e) {
     e.preventDefault()
     var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
     moved = ((touchStartY - touch.pageY)+(touchStartX - touch.pageX)) * 3;
@@ -74,11 +74,11 @@ $(function() {
     cancelAnimationFrame(animRAF);
     scrollHandler()
   });
-  WIN.on('touchend', function(e) {
+  WIN.addEventListener('touchend', function(e) {
     animateScroll()
   })
 
-  WIN.on('keydown',function(e) {
+  WIN.addEventListener('keydown',function(e) {
     if (e.keyCode === 39 || e.keyCode === 40 || e.keyCode === 32) {
       cancelAnimationFrame(animRAF);
       animateScroll((currentSection + 1) * -90,rotation)
@@ -101,9 +101,7 @@ $(function() {
     requestAnimationFrame(function(){
       var scale = Math.pow(aspect,rotation/90);
       currentSection = Math.min(sectionCount + 2,Math.max(-sectionCount,Math.floor((rotation-30)/-90)));
-      spiral.css({
-        transform: 'rotate(' + rotation + 'deg) scale(' + scale + ')',
-      })
+      spiral.style.transform = 'rotate(' + rotation + 'deg) scale(' + scale + ')';
       sections.removeClass('active')
       sections.eq(currentSection).addClass('active')
     })
@@ -148,10 +146,8 @@ $(function() {
     }
     // END HACK
 
-    spiral.css({
-      transformOrigin: spiralOrigin,
-      backfaceVisiblity: 'hidden'
-    })
+    spiral.style.transformOrigin= spiralOrigin;
+    spiral.style.backfaceVisiblity= 'hidden';
     sections.each(function(i){
       var myRot = Math.floor(90*i);
       var scale = Math.pow(aspect, i);
@@ -190,4 +186,4 @@ $(function() {
       },200);
     }
   }
-})
+})();
