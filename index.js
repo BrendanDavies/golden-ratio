@@ -90,10 +90,10 @@
   })
 
   // TODO: USE DELEGATE LISTENER
-  sections.forEach(function(section) {
+  sections.forEach(function(section, index) {
     section.addEventListener('click',function() {
         cancelAnimationFrame(animRAF)
-        animateScroll($(this).index() * -90,rotation);
+        animateScroll(index * -90,rotation);
     });
   });
 
