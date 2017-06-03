@@ -33,14 +33,22 @@
   resizeHandler();
 
 // EVENTS
-/////////
+///////
+  var resizes$ = Rx.Observable.fromEvent(window, 'resize');
+  var scrolls$ = Rx.Observable.fromEvent(window, 'scroll');
+  var wheels$ = Rx.Observable.fromEvent(window, 'wheel');
+  var touchStarts$ = Rx.Observable.fromEvent(window, 'touchstart');
+  var touchMoves$ = Rx.Observable.fromEvent(window, 'touchmove');
+  var touchEnds$ = Rx.Observable.fromEvent(window, 'touchend');
+  var keyDowns$ = Rx.Observable.fromEvent(window, 'keydown');
+  
 
-  WIN.addEventListener('resize',resizeHandler);
-  WIN.addEventListener('scroll',function(e){
+  resizes$.subscribe(resizeHandler);
+  scrolls$.subscribe(e => {
     e.preventDefault();
-  })
+  });
 
-  WIN.addEventListener('wheel', function(e) {
+  wheels$.subscribe(function(e) {
     var deltaY = -e.deltaY; // WAS originalEvent
     if (windows || linux) {
       deltaY = e.deltaY * 5;
@@ -54,15 +62,16 @@
     scrollHandler();
   });
 
-  WIN.addEventListener('touchstart', function(e) {
+  touchStarts$.subscribe(function(e) {
     e.preventDefault()
     var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
     moved = 0;
     touchStartX = touch.pageX;
     touchStartY = touch.pageY;
     cancelAnimationFrame(animRAF);
-  })
-  WIN.addEventListener('touchmove', function(e) {
+  });
+
+  touchMoves$.subscribe(function(e) {
     e.preventDefault()
     var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
     moved = ((touchStartY - touch.pageY)+(touchStartX - touch.pageX)) * 3;
@@ -74,11 +83,12 @@
     cancelAnimationFrame(animRAF);
     scrollHandler()
   });
-  WIN.addEventListener('touchend', function(e) {
-    animateScroll()
-  })
 
-  WIN.addEventListener('keydown',function(e) {
+  touchEnds$.subscribe(function() {
+    animateScroll()
+  });
+
+  keyDowns$.subscribe(function(e) {
     if (e.keyCode === 39 || e.keyCode === 40 || e.keyCode === 32) {
       cancelAnimationFrame(animRAF);
       animateScroll((currentSection + 1) * -90,rotation)
@@ -87,7 +97,7 @@
       animateScroll((currentSection - 1) * -90,rotation)
     }
     scrollHandler()
-  })
+  });
 
   // TODO: USE DELEGATE LISTENER
   sections.forEach(function(section, index) {
