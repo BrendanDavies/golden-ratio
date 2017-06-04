@@ -14,5 +14,8 @@
     "eslint-config-airbnb": "^15.0.1",
     "eslint-config-airbnb-base": "^11.2.0",
     "eslint-plugin-import": "^2.3.0"
+  },
+  "dependencies": {
+    "rxjs": "^5.4.0"
   }
 }
