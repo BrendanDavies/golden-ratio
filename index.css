@@ -11,6 +11,7 @@ a {
 
 .js-spiral {
   position: fixed;
+  backface-visibility: hidden;
 }
 
 .js-section {

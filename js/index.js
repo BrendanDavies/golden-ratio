@@ -5,14 +5,9 @@
 
   const sections = window.document.querySelectorAll('.js-section');
   const spiral = window.document.querySelector('.js-spiral');
-  let _winW;
-  let _winH;
-  let smallScreen;
-  let landscape;
-  let spiralOrigin;
+  const sectionCount = sections.length;
 
   let rotation = 0;
-  const sectionCount = sections.length;
   let currentSection = 0;
   let touchStartY = 0;
   let touchStartX = 0;
@@ -49,6 +44,7 @@
       }
     });
   }
+
   function animateScroll(targR, startR, speed) {
     // const distance = startR - targR;
     const mySpeed = speed || 0.2;
@@ -72,28 +68,36 @@
     }
   }
 
-  function buildSpiral() {
+  function buildSpiral(contianerSize = {}) {
+    const isSmallScreen = contianerSize.width < 960;
+    const isLandscape = contianerSize.width.height < contianerSize.width;
     // rotate around this point
-    const xPixels = Math.floor(_winW * axis);
-    const yPixels = Math.floor(_winW * aspect * axis);
-
-    spiralOrigin = `${xPixels}px ${yPixels}px`;
-    let w = _winW * aspect;
-    let h = w; // they're squares
-    if (smallScreen && !landscape) { // flip it 90deg if it's a portrait phone
-      spiralOrigin = Math.floor((_winW / aspect) * aspect * (1 - axis)) + 'px ' + Math.floor((_winW / aspect) * axis) + 'px ';
-      w = _winW;
-      h = _winW;
+    let spiralXOrigin;
+    let spiralYOrigin;
+    let spiralOrigin;
+    let w;
+    let h;
+    if (isSmallScreen && !isLandscape) { // flip it 90deg if it's a portrait phone
+      spiralXOrigin = Math.floor((contianerSize.width / aspect) * aspect * (1 - axis));
+      spiralYOrigin = Math.floor((contianerSize.width / aspect) * axis);
+      w = contianerSize.width;
+      h = contianerSize.width;// Height is goofed
+    } else {
+      spiralXOrigin = Math.floor(contianerSize.width * axis);
+      spiralYOrigin = Math.floor(contianerSize.width * aspect * axis);
+      w = contianerSize.width * aspect;
+      h = w; // they're squares -- EXCEEDS WINDOW HEIGHT
     }
+
     // HACK to smooth out Chrome vs Safari/Firefox
     let translate = '';
     if (safari || firefox) {
       translate = 'translate3d(0,0,0)';
     }
     // END HACK
+    spiralOrigin = `${spiralXOrigin}px ${spiralYOrigin}px`;
 
     spiral.style.transformOrigin = spiralOrigin;
-    spiral.style.backfaceVisiblity = 'hidden';
     sections.forEach((section, index) => {
       const myRot = Math.floor(90 * index);
       const scale = aspect ** index;
@@ -109,12 +113,11 @@
     scrollHandler();
   }
 
-  function resizeHandler() { // Set the size of images and preload them
-    _winW = window.innerWidth / (1000 / window.innerHeight);
-    _winH = window.innerHeight;
-    smallScreen = _winW < 960;
-    landscape = _winH < _winW;
-    buildSpiral();
+  function resizeHandler() {
+    // Set the size of images and preload them
+    const windowWidth = window.innerWidth / (1000 / window.innerHeight);
+    const windowHeight = window.innerHeight;
+    buildSpiral({ height: windowHeight, width: windowWidth });
   }
 
   // if no scrolling happens for 200ms, animate to the closest section
