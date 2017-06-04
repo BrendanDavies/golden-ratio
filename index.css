@@ -20,6 +20,7 @@ a {
   box-sizing: border-box;
   transition: .2s border ease-out;
   border: 2px solid #113232;
+  backface-visibility: hidden;
 }
 
 .js-section:hover {

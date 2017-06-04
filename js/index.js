@@ -103,7 +103,7 @@
 
     spiral.style.transformOrigin = spiralOrigin;
     sections.forEach((section, index) => {
-      const myRot = Math.floor(90 * index);
+      const sectionRotation = Math.floor(90 * index);
       const scale = aspect ** index;
       const dimmedColor = Math.floor(255 - (index * (255 / sectionCount)));
 
@@ -112,7 +112,7 @@
       section.style.transformOrigin = spiralOrigin;
       section.style.backfaceVisiblity = 'hidden';
       section.style.backgroundColor = `rgb(${dimmedColor},50,50)`;
-      section.style.transform = `rotate(${myRot}deg) scale(${scale}) ${translate}`;
+      section.style.transform = `rotate(${sectionRotation}deg) scale(${scale}) ${translate}`;
     });
     scrollHandler();
   }
