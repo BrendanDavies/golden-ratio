@@ -7,6 +7,14 @@
   const spiral = window.document.querySelector('.js-spiral');
   const sectionCount = sections.length;
 
+  const KEY_CODES = {
+    SPACE: 32,
+    LEFT: 37,
+    UP: 38,
+    RIGHT: 39,
+    DOWN: 40,
+  };
+
   // State Variables
   let rotation = 0;
   let currentSection = 0;
@@ -69,6 +77,9 @@
     }
   }
 
+  /**
+   * Returns largest golden ratio rectangle that will fit in viewport
+   */
   function getSpiralDimensions() {
     const windowHeight = window.innerHeight;
     const windowWidth = window.innerWidth;
@@ -110,7 +121,6 @@
       section.style.width = dimensions.width;
       section.style.height = dimensions.height;
       section.style.transformOrigin = spiralOrigin;
-      section.style.backfaceVisiblity = 'hidden';
       section.style.backgroundColor = `rgb(${dimmedColor},50,50)`;
       section.style.transform = `rotate(${sectionRotation}deg) scale(${scale}) ${translate}`;
     });
@@ -128,7 +138,7 @@
     }
   }
   
-  // Build Initial Spiral
+// Build Initial Spiral
   buildSpiral(getSpiralDimensions());
 
 // EVENTS /////
@@ -196,10 +206,20 @@
   });
 
   keyDowns$.subscribe((e) => {
-    if (e.keyCode === 39 || e.keyCode === 40 || e.keyCode === 32) {
+    const FORWARD_KEYS = [
+      KEY_CODES.DOWN,
+      KEY_CODES.RIGHT,
+      KEY_CODES.SPACE,
+    ];
+    const BACK_KEYS = [
+      KEY_CODES.LEFT,
+      KEY_CODES.UP,
+    ];
+ 
+    if (FORWARD_KEYS.indexOf(e.keyCode) !== -1) {
       window.cancelAnimationFrame(animRAF);
       animateScroll((currentSection + 1) * -90, rotation);
-    } else if (e.keyCode === 37 || e.keyCode === 38) {
+    } else if (BACK_KEYS.indexOf(e.keyCode) !== -1) {
       window.cancelAnimationFrame(animRAF);
       animateScroll((currentSection - 1) * -90, rotation);
     }
