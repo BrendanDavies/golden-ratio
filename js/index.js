@@ -7,6 +7,7 @@
   const spiral = window.document.querySelector('.js-spiral');
   const sectionCount = sections.length;
 
+  // State Variables
   let rotation = 0;
   let currentSection = 0;
   let touchStartY = 0;
@@ -68,34 +69,37 @@
     }
   }
 
-  function buildSpiral(contianerSize = {}) {
-    const isSmallScreen = contianerSize.width < 960;
-    const isLandscape = contianerSize.width.height < contianerSize.width;
-    // rotate around this point
-    let spiralXOrigin;
-    let spiralYOrigin;
-    let spiralOrigin;
-    let w;
-    let h;
-    if (isSmallScreen && !isLandscape) { // flip it 90deg if it's a portrait phone
-      spiralXOrigin = Math.floor((contianerSize.width / aspect) * aspect * (1 - axis));
-      spiralYOrigin = Math.floor((contianerSize.width / aspect) * axis);
-      w = contianerSize.width;
-      h = contianerSize.width;// Height is goofed
-    } else {
-      spiralXOrigin = Math.floor(contianerSize.width * axis);
-      spiralYOrigin = Math.floor(contianerSize.width * aspect * axis);
-      w = contianerSize.width * aspect;
-      h = w; // they're squares -- EXCEEDS WINDOW HEIGHT
-    }
+  function getSpiralDimensions() {
+    const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
+    const isSmallScreen = windowWidth < 960;
+    const isLandscape = windowHeight < windowWidth;
+    const size = Math.min(windowWidth * aspect, windowHeight);
 
-    // HACK to smooth out Chrome vs Safari/Firefox
+    if (isSmallScreen && !isLandscape) { // flip it 90deg if it's a portrait phone
+      return {
+        xOrigin: Math.floor(windowWidth * (1 - axis)),
+        yOrigin: Math.floor((windowWidth / aspect) * axis),
+        width: windowWidth,
+        height: windowWidth,
+      };
+    }
+    return {
+      xOrigin: Math.floor(size * (1 / aspect) * axis),
+      yOrigin: Math.floor(size * axis),
+      width: size,
+      height: size,
+    };
+  }
+
+  function buildSpiral(dimensions = {}) {
+    // HACK to smooth out Chrome vs Safari/Firefox by pushing to GPU
     let translate = '';
     if (safari || firefox) {
       translate = 'translate3d(0,0,0)';
     }
     // END HACK
-    spiralOrigin = `${spiralXOrigin}px ${spiralYOrigin}px`;
+    const spiralOrigin = `${dimensions.xOrigin}px ${dimensions.yOrigin}px`;
 
     spiral.style.transformOrigin = spiralOrigin;
     sections.forEach((section, index) => {
@@ -103,21 +107,14 @@
       const scale = aspect ** index;
       const dimmedColor = Math.floor(255 - (index * (255 / sectionCount)));
 
-      section.style.width = w;
-      section.style.height = h;
+      section.style.width = dimensions.width;
+      section.style.height = dimensions.height;
       section.style.transformOrigin = spiralOrigin;
       section.style.backfaceVisiblity = 'hidden';
       section.style.backgroundColor = `rgb(${dimmedColor},50,50)`;
       section.style.transform = `rotate(${myRot}deg) scale(${scale}) ${translate}`;
     });
     scrollHandler();
-  }
-
-  function resizeHandler() {
-    // Set the size of images and preload them
-    const windowWidth = window.innerWidth / (1000 / window.innerHeight);
-    const windowHeight = window.innerHeight;
-    buildSpiral({ height: windowHeight, width: windowWidth });
   }
 
   // if no scrolling happens for 200ms, animate to the closest section
@@ -130,10 +127,16 @@
       }, 200);
     }
   }
+  
+  // Build Initial Spiral
+  buildSpiral(getSpiralDimensions());
 
-  resizeHandler();
+// EVENTS /////
+  function preventDefault(event) {
+    event.preventDefault();
+    return event;
+  }
 
-// EVENTS //////
   function standardizeTouch(event) {
     return {
       x: event.touches[0].clientX,
@@ -153,10 +156,8 @@
   const touchEnds$ = Rx.Observable.fromEvent(window, 'touchend');
   const keyDowns$ = Rx.Observable.fromEvent(window, 'keydown');
 
-  resizes$.subscribe(resizeHandler);
-  scrolls$.subscribe((e) => {
-    e.preventDefault();
-  });
+  resizes$.subscribe(() => buildSpiral(getSpiralDimensions()));
+  scrolls$.subscribe(preventDefault);
 
   wheels$.subscribe((e) => {
     let deltaY = -e.deltaY; // WAS originalEvent
