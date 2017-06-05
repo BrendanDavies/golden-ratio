@@ -4,7 +4,8 @@
   const axis = 0.7237;
 
   const sections = window.document.querySelectorAll('.js-section');
-  const spiral = window.document.querySelector('.js-spiral');
+  const spiral = window.document.querySelector('.spiral');
+  const wrapper = window.document.querySelector('.wrapper');
   const sectionCount = sections.length;
 
   const KEY_CODES = {
@@ -18,9 +19,8 @@
   // State Variables
   let rotation = 0;
   let currentSection = 0;
-  let touchStartY = 0;
-  let touchStartX = 0;
   let moved = 0;
+  let touchStart = {};
   let animRAF;
   let scrollTimeout;
 
@@ -35,8 +35,8 @@
 
 // FUNCTIONS ////////////
   // keep it from getting too small or too big
-  function trimRotation() {
-    return Math.max(-1500, Math.min(1200, rotation));
+  function trimRotation(degrees) {
+    return Math.max(-1500, Math.min(1200, degrees));
   }
 
   function scrollHandler() {
@@ -55,24 +55,23 @@
   }
 
   function animateScroll(targR, startR, speed) {
-    // const distance = startR - targR;
     const mySpeed = speed || 0.2;
+    let additionalRotation;
     if (((targR || Math.abs(targR) === 0) && Math.abs(targR - rotation) > 0.1) || Math.abs(moved) > 1) {
       if (targR || Math.abs(targR) === 0) {
-        rotation += mySpeed * (targR - rotation);
+        additionalRotation = mySpeed * (targR - rotation);
       } else {
         moved *= 0.98;
-        rotation += moved / -10;
+        additionalRotation = moved / -10;
       }
-      rotation = trimRotation();
+      rotation = trimRotation(rotation + additionalRotation);
       scrollHandler();
       animRAF = window.requestAnimationFrame(() => {
         animateScroll(targR, startR, speed);
       });
     } else if (targR || Math.abs(targR) === 0) {
       window.cancelAnimationFrame(animRAF);
-      rotation = targR;
-      rotation = trimRotation();
+      rotation = trimRotation(targR);
       scrollHandler();
     }
   }
@@ -96,7 +95,7 @@
       };
     }
     return {
-      xOrigin: Math.floor(size * (1 / aspect) * axis),
+      xOrigin: Math.floor((size / aspect) * axis),
       yOrigin: Math.floor(size * axis),
       width: size,
       height: size,
@@ -112,6 +111,9 @@
     // END HACK
     const spiralOrigin = `${dimensions.xOrigin}px ${dimensions.yOrigin}px`;
 
+    // Set height and width of wrapper Rectangle (for centering)
+    wrapper.style.width = dimensions.width / aspect;
+    wrapper.style.height = dimensions.height;
     spiral.style.transformOrigin = spiralOrigin;
     sections.forEach((section, index) => {
       const sectionRotation = Math.floor(90 * index);
@@ -175,8 +177,7 @@
       deltaY = e.deltaY * 5;
     }
     moved = -deltaY || 0;
-    rotation += moved / -10;
-    rotation = trimRotation();
+    rotation = trimRotation(rotation + (moved / -10));
     e.preventDefault();
     startScrollTimeout();
     window.cancelAnimationFrame(animRAF);
@@ -185,17 +186,14 @@
 
   touchStarts$.subscribe((position) => {
     moved = 0;
-    touchStartX = position.x;
-    touchStartY = position.y;
+    touchStart = position;
     window.cancelAnimationFrame(animRAF);
   });
 
   touchMoves$.subscribe((position) => {
-    moved = ((touchStartY - position.y) + (touchStartX - position.x)) * 3;
-    touchStartX = position.x;
-    touchStartY = position.y;
-    rotation += moved / -10;
-    rotation = trimRotation();
+    moved = ((touchStart.y - position.y) + (touchStart.x - position.x)) * 3;
+    touchStart = position;
+    rotation = trimRotation(rotation + (moved / -10));
     startScrollTimeout();
     window.cancelAnimationFrame(animRAF);
     scrollHandler();
