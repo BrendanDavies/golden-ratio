@@ -1,4 +1,6 @@
-(function() {
+/* global window */
+(function iife() {
+
   // TODO: Undo user agent stuff
   const userAgent = window.navigator.userAgent.toLowerCase();
   const firefox = userAgent.indexOf('firefox') !== -1 || userAgent.indexOf('mozilla') === -1;
@@ -6,6 +8,75 @@
   const safari = (userAgent.indexOf('safari') !== -1 && userAgent.indexOf('chrome') === -1) || ios;
   const linux = userAgent.indexOf('linux') !== -1;
   const windows = userAgent.indexOf('windows') !== -1;
+
+  // State Variables
+  let rotation = 0;
+  let currentSection = 0;
+  let moved = 0;
+  let touchStart = {};
+  let animRAF;
+  let scrollTimeout;
+
+
+  const KEY_CODES = {
+    SPACE: 32,
+    LEFT: 37,
+    UP: 38,
+    RIGHT: 39,
+    DOWN: 40,
+  };
+
+  function trimRotation(degrees) {
+    return Math.max(-1500, Math.min(1200, degrees));
+  }
+
+  function scrollHandler() {
+    window.requestAnimationFrame(() => {
+      const scale = aspect ** (rotation / 90);
+      currentSection = Math.min(sectionCount + 2, Math.max(-sectionCount, Math.floor((rotation - 30) / -90)));
+      spiral.style.transform = `rotate(${rotation}deg) scale(${scale})`;
+      // TODO: Something better
+      sections.forEach((section) => {
+        section.classList.remove('active');
+      });
+      if (sections[currentSection]) {
+        sections[currentSection].classList.add('active');
+      }
+    });
+  }
+
+  function animateScroll(targR, startR, speed) {
+    const mySpeed = speed || 0.2;
+    let additionalRotation;
+    if (((targR || Math.abs(targR) === 0) && Math.abs(targR - rotation) > 0.1) || Math.abs(moved) > 1) {
+      if (targR || Math.abs(targR) === 0) {
+        additionalRotation = mySpeed * (targR - rotation);
+      } else {
+        moved *= 0.98;
+        additionalRotation = moved / -10;
+      }
+      rotation = trimRotation(rotation + additionalRotation);
+      scrollHandler();
+      animRAF = window.requestAnimationFrame(() => {
+        animateScroll(targR, startR, speed);
+      });
+    } else if (targR || Math.abs(targR) === 0) {
+      window.cancelAnimationFrame(animRAF);
+      rotation = trimRotation(targR);
+      scrollHandler();
+    }
+  }
+
+  // if no scrolling happens for 200ms, animate to the closest section
+  function startScrollTimeout() {
+    clearTimeout(scrollTimeout);
+    if (currentSection > -1 && currentSection < sectionCount) {
+      scrollTimeout = setTimeout(() => {
+        window.cancelAnimationFrame(animRAF);
+        animateScroll(currentSection * -90, rotation, 0.15);
+      }, 200);
+    }
+  }
 
   function preventDefault(event) {
     event.preventDefault();
@@ -19,6 +90,7 @@
     };
   }
 
+// EVENTS
   const resizes$ = Rx.Observable.fromEvent(window, 'resize');
   const scrolls$ = Rx.Observable.fromEvent(window, 'scroll');
   const wheels$ = Rx.Observable.fromEvent(window, 'wheel');
@@ -87,11 +159,5 @@
     scrollHandler();
   });
 
-  // TODO: USE DELEGATE LISTENER
-  sections.forEach((section, index) => {
-    section.addEventListener('click', () => {
-      window.cancelAnimationFrame(animRAF);
-      animateScroll(index * -90, rotation);
-    });
-  });
+
 }());

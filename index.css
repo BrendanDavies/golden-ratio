@@ -19,6 +19,7 @@ a {
 .spiral {
   position: fixed;
   backface-visibility: hidden;
+  transition: 300ms ease-out;
 }
 
 .js-section {

@@ -1,4 +1,4 @@
-/* global window Rx */
+/* global window */
 (function iife() {
   const aspect = 0.618033;
   const axis = 0.7237;
@@ -7,65 +7,6 @@
   const spiral = window.document.querySelector('.spiral');
   const wrapper = window.document.querySelector('.wrapper');
   const sectionCount = sections.length;
-
-  const KEY_CODES = {
-    SPACE: 32,
-    LEFT: 37,
-    UP: 38,
-    RIGHT: 39,
-    DOWN: 40,
-  };
-
-  // State Variables
-  let rotation = 0;
-  let currentSection = 0;
-  let moved = 0;
-  let touchStart = {};
-  let animRAF;
-  let scrollTimeout;
-
-// FUNCTIONS ////////////
-  // keep it from getting too small or too big
-  function trimRotation(degrees) {
-    return Math.max(-1500, Math.min(1200, degrees));
-  }
-
-  function scrollHandler() {
-    window.requestAnimationFrame(() => {
-      const scale = aspect ** (rotation / 90);
-      currentSection = Math.min(sectionCount + 2, Math.max(-sectionCount, Math.floor((rotation - 30) / -90)));
-      spiral.style.transform = `rotate(${rotation}deg) scale(${scale})`;
-      // TODO: Something better
-      sections.forEach((section) => {
-        section.classList.remove('active');
-      });
-      if (sections[currentSection]) {
-        sections[currentSection].classList.add('active');
-      }
-    });
-  }
-
-  function animateScroll(targR, startR, speed) {
-    const mySpeed = speed || 0.2;
-    let additionalRotation;
-    if (((targR || Math.abs(targR) === 0) && Math.abs(targR - rotation) > 0.1) || Math.abs(moved) > 1) {
-      if (targR || Math.abs(targR) === 0) {
-        additionalRotation = mySpeed * (targR - rotation);
-      } else {
-        moved *= 0.98;
-        additionalRotation = moved / -10;
-      }
-      rotation = trimRotation(rotation + additionalRotation);
-      scrollHandler();
-      animRAF = window.requestAnimationFrame(() => {
-        animateScroll(targR, startR, speed);
-      });
-    } else if (targR || Math.abs(targR) === 0) {
-      window.cancelAnimationFrame(animRAF);
-      rotation = trimRotation(targR);
-      scrollHandler();
-    }
-  }
 
   /**
    * Returns largest golden ratio rectangle that will fit in viewport
@@ -104,6 +45,10 @@
     };
   }
 
+  /**
+   * Builds spiral element and sections
+   * @param {Object} dimensions Object with dimensions of spiral
+   */
   function buildSpiral(dimensions = {}) {
     const spiralOrigin = `${dimensions.xOrigin}px ${dimensions.yOrigin}px`;
 
@@ -122,20 +67,17 @@
       section.style.backgroundColor = `rgb(${dimmedColor},50,50)`;
       section.style.transform = `rotate(${sectionRotation}deg) scale(${scale}) translate3d(0,0,0)`;
     });
-    scrollHandler();
   }
 
-  // if no scrolling happens for 200ms, animate to the closest section
-  function startScrollTimeout() {
-    clearTimeout(scrollTimeout);
-    if (currentSection > -1 && currentSection < sectionCount) {
-      scrollTimeout = setTimeout(() => {
-        window.cancelAnimationFrame(animRAF);
-        animateScroll(currentSection * -90, rotation, 0.15);
-      }, 200);
-    }
-  }
-
-// Build Initial Spiral
   buildSpiral(getSpiralDimensions());
+
+// Click Handler
+// TODO: USE DELEGATE LISTENER
+  sections.forEach((section, index) => {
+    section.addEventListener('click', () => {
+      const rotation = -90 * index;
+      const scale = aspect ** (rotation / 90);
+      spiral.style.transform = `rotate(${rotation}deg) scale(${scale})`;
+    });
+  });
 }());
