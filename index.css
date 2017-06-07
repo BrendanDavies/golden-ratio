@@ -9,9 +9,17 @@ a {
   color: #fff;
 }
 
-.js-spiral {
+.wrapper {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.spiral {
   position: fixed;
   backface-visibility: hidden;
+  transition: 300ms ease-out;
 }
 
 .js-section {
@@ -20,6 +28,7 @@ a {
   box-sizing: border-box;
   transition: .2s border ease-out;
   border: 2px solid #113232;
+  backface-visibility: hidden;
 }
 
 .js-section:hover {
