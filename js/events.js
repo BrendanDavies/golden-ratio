@@ -1,14 +1,5 @@
 /* global window */
 (function iife() {
-
-  // TODO: Undo user agent stuff
-  const userAgent = window.navigator.userAgent.toLowerCase();
-  const firefox = userAgent.indexOf('firefox') !== -1 || userAgent.indexOf('mozilla') === -1;
-  const ios = /iphone|ipod|ipad/.test(userAgent);
-  const safari = (userAgent.indexOf('safari') !== -1 && userAgent.indexOf('chrome') === -1) || ios;
-  const linux = userAgent.indexOf('linux') !== -1;
-  const windows = userAgent.indexOf('windows') !== -1;
-
   // State Variables
   let rotation = 0;
   let currentSection = 0;
@@ -17,31 +8,14 @@
   let animRAF;
   let scrollTimeout;
 
-
-  const KEY_CODES = {
-    SPACE: 32,
-    LEFT: 37,
-    UP: 38,
-    RIGHT: 39,
-    DOWN: 40,
-  };
-
   function trimRotation(degrees) {
     return Math.max(-1500, Math.min(1200, degrees));
   }
 
   function scrollHandler() {
     window.requestAnimationFrame(() => {
-      const scale = aspect ** (rotation / 90);
       currentSection = Math.min(sectionCount + 2, Math.max(-sectionCount, Math.floor((rotation - 30) / -90)));
-      spiral.style.transform = `rotate(${rotation}deg) scale(${scale})`;
-      // TODO: Something better
-      sections.forEach((section) => {
-        section.classList.remove('active');
-      });
-      if (sections[currentSection]) {
-        sections[currentSection].classList.add('active');
-      }
+      scrollToItem(currentSection)();
     });
   }
 
@@ -91,7 +65,6 @@
   }
 
 // EVENTS
-  const resizes$ = Rx.Observable.fromEvent(window, 'resize');
   const scrolls$ = Rx.Observable.fromEvent(window, 'scroll');
   const wheels$ = Rx.Observable.fromEvent(window, 'wheel');
   const touchStarts$ = Rx.Observable
@@ -101,16 +74,11 @@
     .fromEvent(window, 'touchmove')
     .map(standardizeTouch);
   const touchEnds$ = Rx.Observable.fromEvent(window, 'touchend');
-  const keyDowns$ = Rx.Observable.fromEvent(window, 'keydown');
 
-  resizes$.subscribe(() => buildSpiral(getSpiralDimensions()));
   scrolls$.subscribe(preventDefault);
 
   wheels$.subscribe((e) => {
     let deltaY = -e.deltaY; // WAS originalEvent
-    if (windows || linux) {
-      deltaY = e.deltaY * 5;
-    }
     moved = -deltaY || 0;
     rotation = trimRotation(rotation + (moved / -10));
     e.preventDefault();
@@ -137,27 +105,4 @@
   touchEnds$.subscribe(() => {
     animateScroll();
   });
-
-  keyDowns$.subscribe((e) => {
-    const FORWARD_KEYS = [
-      KEY_CODES.DOWN,
-      KEY_CODES.RIGHT,
-      KEY_CODES.SPACE,
-    ];
-    const BACK_KEYS = [
-      KEY_CODES.LEFT,
-      KEY_CODES.UP,
-    ];
-
-    if (FORWARD_KEYS.indexOf(e.keyCode) !== -1) {
-      window.cancelAnimationFrame(animRAF);
-      animateScroll((currentSection + 1) * -90, rotation);
-    } else if (BACK_KEYS.indexOf(e.keyCode) !== -1) {
-      window.cancelAnimationFrame(animRAF);
-      animateScroll((currentSection - 1) * -90, rotation);
-    }
-    scrollHandler();
-  });
-
-
 }());
