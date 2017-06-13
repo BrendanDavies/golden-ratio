@@ -1,7 +1,7 @@
 /* global window */
 import { buildSpiral, scrollToItem } from './spiral';
 import { sections } from './elements';
-import keyHandler from './key';
+import keyHandler from './key-handler';
 
 // Build Spiral
 buildSpiral();
