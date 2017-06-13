@@ -4,7 +4,7 @@
   "description": "portfolio",
   "main": "index.html",
   "scripts": {
-    "serve": "python -m SimpleHTTPServer 8000",
+    "serve": "webpack-dev-server --progress --colors",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "brendan davies",
