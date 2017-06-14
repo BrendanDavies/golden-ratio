@@ -75,7 +75,7 @@
 const container = window;
 /* unused harmony export container */
 
-const sections = container.document.querySelectorAll('.js-section');
+const sections = container.document.querySelectorAll('.section');
 /* harmony export (immutable) */ __webpack_exports__["a"] = sections;
 
 const spiral = container.document.querySelector('.spiral');
@@ -173,7 +173,7 @@ function buildSpiral() {
  * Clear active flag from any sections
  */
 function clearActiveSections() {
-  window.document.querySelectorAll('.js-section.active').forEach((activeSection) => {
+  window.document.querySelectorAll('.section.active').forEach((activeSection) => {
     activeSection.classList.remove('active');
   });
 }
@@ -257,7 +257,7 @@ const KEY_CODES = {
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__spiral__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__elements__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__key__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__key_handler__ = __webpack_require__(2);
 /* global window */
 
 
@@ -276,7 +276,7 @@ __WEBPACK_IMPORTED_MODULE_1__elements__["a" /* sections */].forEach((section, in
 });
 
 // Key Down
-window.addEventListener('keydown', __WEBPACK_IMPORTED_MODULE_2__key__["a" /* default */]);
+window.addEventListener('keydown', __WEBPACK_IMPORTED_MODULE_2__key_handler__["a" /* default */]);
 
 
 /***/ })

@@ -22,7 +22,7 @@ a {
   transition: 300ms ease-out;
 }
 
-.js-section {
+.section {
   position: absolute;
   left: -100%;
   box-sizing: border-box;
@@ -31,7 +31,7 @@ a {
   backface-visibility: hidden;
 }
 
-.js-section:hover {
+.section:hover {
   border-radius: 5%;
   border: 10px solid #113232;
 }

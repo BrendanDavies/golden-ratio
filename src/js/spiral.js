@@ -75,7 +75,7 @@ export function buildSpiral() {
  * Clear active flag from any sections
  */
 export function clearActiveSections() {
-  window.document.querySelectorAll('.js-section.active').forEach((activeSection) => {
+  window.document.querySelectorAll('.section.active').forEach((activeSection) => {
     activeSection.classList.remove('active');
   });
 }
