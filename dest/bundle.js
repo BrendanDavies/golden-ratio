@@ -68,56 +68,58 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 /* global window */
-const container = window;
-/* unused harmony export container */
-
-const sections = container.document.querySelectorAll('.section');
-/* harmony export (immutable) */ __webpack_exports__["a"] = sections;
-
-const spiral = container.document.querySelector('.spiral');
-/* harmony export (immutable) */ __webpack_exports__["c"] = spiral;
-
-const wrapper = container.document.querySelector('.wrapper');
-/* harmony export (immutable) */ __webpack_exports__["b"] = wrapper;
-
-
+var container = exports.container = window;
+var sections = exports.sections = container.document.querySelectorAll('.section');
+var spiral = exports.spiral = container.document.querySelector('.spiral');
+var wrapper = exports.wrapper = container.document.querySelector('.wrapper');
 
 /***/ }),
 /* 1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = buildSpiral;
-/* unused harmony export clearActiveSections */
-/* harmony export (immutable) */ __webpack_exports__["c"] = getActiveSectionIndex;
-/* harmony export (immutable) */ __webpack_exports__["b"] = scrollToItem;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__elements__ = __webpack_require__(0);
-/* global window */
 
 
-const aspect = 0.618033;
-const axis = 0.7237;
-const sectionCount = __WEBPACK_IMPORTED_MODULE_0__elements__["a" /* sections */].length;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.buildSpiral = buildSpiral;
+exports.clearActiveSections = clearActiveSections;
+exports.getActiveSectionIndex = getActiveSectionIndex;
+exports.scrollToItem = scrollToItem;
+
+var _elements = __webpack_require__(0);
+
+var aspect = 0.618033; /* global window */
+
+var axis = 0.7237;
+var sectionCount = _elements.sections.length;
 
 /**
  * Returns largest golden ratio rectangle that will fit in viewport
  */
 function getSpiralDimensions() {
-  const windowHeight = window.innerHeight;
-  const windowWidth = window.innerWidth;
-  const isSmallScreen = windowWidth < 960;
-  const isLandscape = windowHeight < windowWidth;
-  let xOrigin;
-  let yOrigin;
-  let sectionSize;
-  let rectHeight;
-  let rectWidth;
+  var windowHeight = window.innerHeight;
+  var windowWidth = window.innerWidth;
+  var isSmallScreen = windowWidth < 960;
+  var isLandscape = windowHeight < windowWidth;
+  var xOrigin = void 0;
+  var yOrigin = void 0;
+  var sectionSize = void 0;
+  var rectHeight = void 0;
+  var rectWidth = void 0;
 
-  if (isSmallScreen && !isLandscape) { // flip it 90deg if it's a portrait phone
+  if (isSmallScreen && !isLandscape) {
+    // flip it 90deg if it's a portrait phone
     sectionSize = windowWidth;
     rectHeight = sectionSize / aspect;
     rectWidth = sectionSize;
@@ -132,11 +134,11 @@ function getSpiralDimensions() {
   }
 
   return {
-    xOrigin,
-    yOrigin,
-    sectionSize,
-    rectHeight,
-    rectWidth,
+    xOrigin: xOrigin,
+    yOrigin: yOrigin,
+    sectionSize: sectionSize,
+    rectHeight: rectHeight,
+    rectWidth: rectWidth
   };
 }
 
@@ -145,17 +147,17 @@ function getSpiralDimensions() {
  * @param {Object} dimensions Object with dimensions of spiral
  */
 function buildSpiral() {
-  const dimensions = getSpiralDimensions();
-  const spiralOrigin = `${dimensions.xOrigin}px ${dimensions.yOrigin}px`;
+  var dimensions = getSpiralDimensions();
+  var spiralOrigin = dimensions.xOrigin + 'px ' + dimensions.yOrigin + 'px';
 
   // Set height and width of wrapper Rectangle (for centering)
-  __WEBPACK_IMPORTED_MODULE_0__elements__["b" /* wrapper */].style.width = dimensions.rectWidth;
-  __WEBPACK_IMPORTED_MODULE_0__elements__["b" /* wrapper */].style.height = dimensions.rectHeight;
-  __WEBPACK_IMPORTED_MODULE_0__elements__["c" /* spiral */].style.transformOrigin = spiralOrigin;
-  __WEBPACK_IMPORTED_MODULE_0__elements__["a" /* sections */].forEach((section, index) => {
-    const sectionRotation = Math.floor(90 * index);
-    const scale = aspect ** index;
-    const dimmedColor = Math.floor(255 - (index * (255 / sectionCount)));
+  _elements.wrapper.style.width = dimensions.rectWidth;
+  _elements.wrapper.style.height = dimensions.rectHeight;
+  _elements.spiral.style.transformOrigin = spiralOrigin;
+  _elements.sections.forEach(function (section, index) {
+    var sectionRotation = Math.floor(90 * index);
+    var scale = Math.pow(aspect, index);
+    var dimmedColor = Math.floor(255 - index * (255 / sectionCount));
 
     if (index === 0) {
       section.classList.add('active');
@@ -164,8 +166,8 @@ function buildSpiral() {
     section.style.width = dimensions.sectionSize;
     section.style.height = dimensions.sectionSize;
     section.style.transformOrigin = spiralOrigin;
-    section.style.backgroundColor = `rgb(${dimmedColor},50,50)`;
-    section.style.transform = `rotate(${sectionRotation}deg) scale(${scale}) translate3d(0,0,0)`;
+    section.style.backgroundColor = 'rgb(' + dimmedColor + ',50,50)';
+    section.style.transform = 'rotate(' + sectionRotation + 'deg) scale(' + scale + ') translate3d(0,0,0)';
   });
 }
 
@@ -173,7 +175,7 @@ function buildSpiral() {
  * Clear active flag from any sections
  */
 function clearActiveSections() {
-  window.document.querySelectorAll('.section.active').forEach((activeSection) => {
+  window.document.querySelectorAll('.section.active').forEach(function (activeSection) {
     activeSection.classList.remove('active');
   });
 }
@@ -182,8 +184,8 @@ function clearActiveSections() {
  * Returns the index of the first active solution
  */
 function getActiveSectionIndex() {
-  let activeIndex;
-  __WEBPACK_IMPORTED_MODULE_0__elements__["a" /* sections */].forEach((section, index) => {
+  var activeIndex = void 0;
+  _elements.sections.forEach(function (section, index) {
     if (section.classList.contains('active')) {
       activeIndex = index;
     }
@@ -196,48 +198,34 @@ function getActiveSectionIndex() {
  * @param {Number} index - index of item to select
  */
 function scrollToItem(index) {
-  return () => {
-    const rotation = -90 * index;
-    const scale = aspect ** (rotation / 90);
+  return function () {
+    var rotation = -90 * index;
+    var scale = Math.pow(aspect, rotation / 90);
 
-    if (index >= 0 && index < __WEBPACK_IMPORTED_MODULE_0__elements__["a" /* sections */].length) {
+    if (index >= 0 && index < _elements.sections.length) {
       clearActiveSections();
-      __WEBPACK_IMPORTED_MODULE_0__elements__["a" /* sections */][index].classList.add('active');
-      __WEBPACK_IMPORTED_MODULE_0__elements__["c" /* spiral */].style.transform = `rotate(${rotation}deg) scale(${scale})`;
+      _elements.sections[index].classList.add('active');
+      _elements.spiral.style.transform = 'rotate(' + rotation + 'deg) scale(' + scale + ')';
     }
   };
 }
 
-
 /***/ }),
 /* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__spiral__ = __webpack_require__(1);
 
 
-// Directional Keys
-const KEY_CODES = {
-  SPACE: 32,
-  LEFT: 37,
-  UP: 38,
-  RIGHT: 39,
-  DOWN: 40,
-};
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
-/* harmony default export */ __webpack_exports__["a"] = (function (event) {
-  const FORWARD_KEYS = [
-    KEY_CODES.DOWN,
-    KEY_CODES.RIGHT,
-    KEY_CODES.SPACE,
-  ];
-  const BACK_KEYS = [
-    KEY_CODES.LEFT,
-    KEY_CODES.UP,
-  ];
-  const currentActiveSection = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__spiral__["c" /* getActiveSectionIndex */])();
-  let indexToSelect;
+exports.default = function (event) {
+  var FORWARD_KEYS = [KEY_CODES.DOWN, KEY_CODES.RIGHT, KEY_CODES.SPACE];
+  var BACK_KEYS = [KEY_CODES.LEFT, KEY_CODES.UP];
+  var currentActiveSection = (0, _spiral.getActiveSectionIndex)();
+  var indexToSelect = void 0;
 
   if (FORWARD_KEYS.indexOf(event.keyCode) !== -1) {
     indexToSelect = currentActiveSection + 1;
@@ -245,39 +233,54 @@ const KEY_CODES = {
     indexToSelect = currentActiveSection - 1;
   }
 
-  __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__spiral__["b" /* scrollToItem */])(indexToSelect)();
-});
+  (0, _spiral.scrollToItem)(indexToSelect)();
+};
 
+var _spiral = __webpack_require__(1);
+
+// Directional Keys
+var KEY_CODES = {
+  SPACE: 32,
+  LEFT: 37,
+  UP: 38,
+  RIGHT: 39,
+  DOWN: 40
+};
 
 /***/ }),
 /* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__spiral__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__elements__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__key_handler__ = __webpack_require__(2);
-/* global window */
 
 
+var _spiral = __webpack_require__(1);
 
+var _elements = __webpack_require__(0);
+
+var _keyHandler = __webpack_require__(2);
+
+var _keyHandler2 = _interopRequireDefault(_keyHandler);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Build Spiral
-__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__spiral__["a" /* buildSpiral */])();
+(0, _spiral.buildSpiral)();
 
 // Resize Handler
-window.addEventListener('resize', () => __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__spiral__["a" /* buildSpiral */])());
+/* global window */
+window.addEventListener('resize', function () {
+  return (0, _spiral.buildSpiral)();
+});
 
 // Click Handler
 // TODO: USE DELEGATE LISTENER
-__WEBPACK_IMPORTED_MODULE_1__elements__["a" /* sections */].forEach((section, index) => {
-  section.addEventListener('click', __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__spiral__["b" /* scrollToItem */])(index));
+_elements.sections.forEach(function (section, index) {
+  section.addEventListener('click', (0, _spiral.scrollToItem)(index));
 });
 
 // Key Down
-window.addEventListener('keydown', __WEBPACK_IMPORTED_MODULE_2__key_handler__["a" /* default */]);
-
+window.addEventListener('keydown', _keyHandler2.default);
 
 /***/ })
 /******/ ]);
