@@ -1,3 +1,4 @@
+// @flow
 /* global window */
 import { sections, spiral, wrapper } from './elements';
 
@@ -53,7 +54,9 @@ export function buildSpiral() {
   // Set height and width of wrapper Rectangle (for centering)
   wrapper.style.width = dimensions.rectWidth;
   wrapper.style.height = dimensions.rectHeight;
+  // Set transform origin for spiral
   spiral.style.transformOrigin = spiralOrigin;
+  // Style each section
   sections.forEach((section, index) => {
     const sectionRotation = Math.floor(90 * index);
     const scale = aspect ** index;
@@ -83,7 +86,7 @@ export function clearActiveSections() {
 /**
  * Returns the index of the first active solution
  */
-export function getActiveSectionIndex() {
+export function getActiveSectionIndex(): Number {
   let activeIndex;
   sections.forEach((section, index) => {
     if (section.classList.contains('active')) {
@@ -97,10 +100,10 @@ export function getActiveSectionIndex() {
  * Handles selecting an section
  * @param {Number} index - index of item to select
  */
-export function scrollToItem(index) {
+export function scrollToItem(index: Number): Function {
   return () => {
     const rotation = -90 * index;
-    const scale = aspect ** (rotation / 90);
+    const scale = aspect ** -index;
 
     if (index >= 0 && index < sections.length) {
       clearActiveSections();
