@@ -60,7 +60,7 @@ export function buildSpiral() {
   sections.forEach((section, index) => {
     const sectionRotation = Math.floor(90 * index);
     const scale = aspect ** index;
-    const dimmedColor = Math.floor(255 - (index * (255 / sectionCount)));
+    const alpha = 1 - (index / sectionCount);
 
     if (index === 0) {
       section.classList.add('active');
@@ -69,7 +69,7 @@ export function buildSpiral() {
     section.style.width = dimensions.sectionSize;
     section.style.height = dimensions.sectionSize;
     section.style.transformOrigin = spiralOrigin;
-    section.style.backgroundColor = `rgb(${dimmedColor},50,50)`;
+    section.style.backgroundColor = `rgba(129, 52, 5, ${alpha})`;
     section.style.transform = `rotate(${sectionRotation}deg) scale(${scale}) translate3d(0,0,0)`;
   });
 }

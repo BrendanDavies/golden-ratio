@@ -99,7 +99,8 @@ exports.scrollToItem = scrollToItem;
 
 var _elements = __webpack_require__(0);
 
-var aspect = 0.618033; /* global window */
+var aspect = 0.618033;
+/* global window */
 
 var axis = 0.7237;
 var sectionCount = _elements.sections.length;
@@ -153,11 +154,13 @@ function buildSpiral() {
   // Set height and width of wrapper Rectangle (for centering)
   _elements.wrapper.style.width = dimensions.rectWidth;
   _elements.wrapper.style.height = dimensions.rectHeight;
+  // Set transform origin for spiral
   _elements.spiral.style.transformOrigin = spiralOrigin;
+  // Style each section
   _elements.sections.forEach(function (section, index) {
     var sectionRotation = Math.floor(90 * index);
     var scale = Math.pow(aspect, index);
-    var dimmedColor = Math.floor(255 - index * (255 / sectionCount));
+    var alpha = 1 - index / sectionCount;
 
     if (index === 0) {
       section.classList.add('active');
@@ -166,7 +169,7 @@ function buildSpiral() {
     section.style.width = dimensions.sectionSize;
     section.style.height = dimensions.sectionSize;
     section.style.transformOrigin = spiralOrigin;
-    section.style.backgroundColor = 'rgb(' + dimmedColor + ',50,50)';
+    section.style.backgroundColor = 'rgba(129, 52, 5, ' + alpha + ')';
     section.style.transform = 'rotate(' + sectionRotation + 'deg) scale(' + scale + ') translate3d(0,0,0)';
   });
 }
@@ -200,7 +203,7 @@ function getActiveSectionIndex() {
 function scrollToItem(index) {
   return function () {
     var rotation = -90 * index;
-    var scale = Math.pow(aspect, rotation / 90);
+    var scale = Math.pow(aspect, -index);
 
     if (index >= 0 && index < _elements.sections.length) {
       clearActiveSections();
