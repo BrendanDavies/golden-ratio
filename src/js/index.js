@@ -3,6 +3,9 @@ import { buildSpiral, scrollToItem } from './spiral';
 import { sections } from './elements';
 import keyHandler from './key-handler';
 
+// Require CSS
+import '../scss/index.scss';
+
 // Build Spiral
 buildSpiral();
 

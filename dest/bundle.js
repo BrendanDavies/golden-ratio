@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -252,6 +252,12 @@ var KEY_CODES = {
 
 /***/ }),
 /* 3 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -265,13 +271,18 @@ var _keyHandler = __webpack_require__(2);
 
 var _keyHandler2 = _interopRequireDefault(_keyHandler);
 
+__webpack_require__(3);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Build Spiral
+/* global window */
 (0, _spiral.buildSpiral)();
 
 // Resize Handler
-/* global window */
+
+
+// Require CSS
 window.addEventListener('resize', function () {
   return (0, _spiral.buildSpiral)();
 });
