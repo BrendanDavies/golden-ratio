@@ -1,3 +1,4 @@
+// @flow
 /* global window */
 import { sections, spiral, wrapper } from './elements';
 
@@ -53,11 +54,13 @@ export function buildSpiral() {
   // Set height and width of wrapper Rectangle (for centering)
   wrapper.style.width = dimensions.rectWidth;
   wrapper.style.height = dimensions.rectHeight;
+  // Set transform origin for spiral
   spiral.style.transformOrigin = spiralOrigin;
+  // Style each section
   sections.forEach((section, index) => {
     const sectionRotation = Math.floor(90 * index);
     const scale = aspect ** index;
-    const dimmedColor = Math.floor(255 - (index * (255 / sectionCount)));
+    const alpha = 1 - (index / sectionCount);
 
     if (index === 0) {
       section.classList.add('active');
@@ -66,7 +69,7 @@ export function buildSpiral() {
     section.style.width = dimensions.sectionSize;
     section.style.height = dimensions.sectionSize;
     section.style.transformOrigin = spiralOrigin;
-    section.style.backgroundColor = `rgb(${dimmedColor},50,50)`;
+    section.style.backgroundColor = `rgba(129, 52, 5, ${alpha})`;
     section.style.transform = `rotate(${sectionRotation}deg) scale(${scale}) translate3d(0,0,0)`;
   });
 }
@@ -75,7 +78,7 @@ export function buildSpiral() {
  * Clear active flag from any sections
  */
 export function clearActiveSections() {
-  window.document.querySelectorAll('.js-section.active').forEach((activeSection) => {
+  window.document.querySelectorAll('.section.active').forEach((activeSection) => {
     activeSection.classList.remove('active');
   });
 }
@@ -83,7 +86,7 @@ export function clearActiveSections() {
 /**
  * Returns the index of the first active solution
  */
-export function getActiveSectionIndex() {
+export function getActiveSectionIndex(): Number {
   let activeIndex;
   sections.forEach((section, index) => {
     if (section.classList.contains('active')) {
@@ -97,10 +100,10 @@ export function getActiveSectionIndex() {
  * Handles selecting an section
  * @param {Number} index - index of item to select
  */
-export function scrollToItem(index) {
+export function scrollToItem(index: Number): Function {
   return () => {
     const rotation = -90 * index;
-    const scale = aspect ** (rotation / 90);
+    const scale = aspect ** -index;
 
     if (index >= 0 && index < sections.length) {
       clearActiveSections();

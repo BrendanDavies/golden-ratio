@@ -1,11 +1,12 @@
-/* global Rx */
+// @flow
+import { Observable, Scheduler } from 'rxjs';
 import { container } from './elements';
 
-const mouseMove$ = Rx.Observable
+const mouseMove$ = Observable
   .fromEvent(container, 'mousemove')
   .map(event => ({ x: event.clientX, y: event.clientY }));
 
-const touchMove$ = Rx.Observable
+const touchMove$ = Observable
   .fromEvent(container, 'touchmove')
   .map(event => ({
     x: event.touches[0].clientX,
@@ -22,9 +23,9 @@ function lerp(start, end) {
   };
 }
 
-const move$ = Rx.Observable.merge(mouseMove$, touchMove$);
+const move$ = Observable.merge(mouseMove$, touchMove$);
 
-const animationFrame$ = Rx.Observable.interval(0, Rx.Scheduler.animationFrame);
+const animationFrame$ = Observable.interval(0, Scheduler.animationFrame);
 
 export const smoothMove$ = animationFrame$
   .withLatestFrom(move$, (tick, move) => move)
